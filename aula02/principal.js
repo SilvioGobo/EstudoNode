@@ -1,18 +1,54 @@
-const calc = require("./modulo/calc_vetores");
+const readline = require('readline');
+const calc = require('./modulo/calc_vetores');
 
-console.log("=== Operação com Vetores ===");
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-const vetorA = [10, 4, 6, 2, 7];
+function ask(pergunta) {
+    return new Promise(resolve => rl.question(pergunta, resolve));
+}
 
-console.log("Vetor analisado: ", vetorA);
+function num(val) {
+    const n = parseFloat(val.replace(',', '.'));
+    return isNaN(n) ? null : n;
+}
 
-const resultadoMedia = calc.media(vetorA);
-const resultadoMaior = calc.maior(vetorA);
-const resultadoMenor = calc.menor(vetorA);
+async function main() {
+    console.log('\n--- Analisador de Vetores ---');
 
-console.log("=== Resultados ===");
-console.log(`Média: ${resultadoMedia}`);
-console.log(`Maior Vetor: ${resultadoMaior}`);
-console.log(`Menor Vetor: ${resultadoMenor}`);
+    const tamanho = num(await ask('Quantos números você quer adicionar ao vetor? '));
 
+    if (tamanho === null || tamanho <= 0) {
+        console.log('Quantidade inválida. Digite um número maior que zero.');
+        rl.close();
+        return; 
+    }
 
+    const meuVetor = [];
+
+    console.log('\nDigite os valores abaixo:');
+
+    for (let i = 0; i < tamanho; i++) {
+        let valor = num(await ask(`Digite o ${i + 1}º número: `));
+        
+        if (valor === null) {
+            console.log('Valor inválido. Vou considerar como 0.');
+            valor = 0;
+        }
+
+        meuVetor.push(valor);
+    }
+
+    console.log('\nVetor digitado:', meuVetor);
+
+    console.log('\n--- Resultados ---');
+    console.log(`Média: ${calc.media(meuVetor).toFixed(2)}`);
+    console.log(`Menor valor: ${calc.menor(meuVetor)}`);
+    console.log(`Maior valor: ${calc.maior(meuVetor)}\n`);
+
+    rl.close();
+}
+
+main();
